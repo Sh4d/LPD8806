@@ -1,0 +1,7 @@
+Raspberry Pi library for the LPD8806 from Adafruit
+
+http://www.adafruit.com/products/306
+
+Download, extract, then run the help:
+  >>> import LPD8806
+  >>> help(LPD8806)
