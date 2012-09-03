@@ -66,7 +66,7 @@ class strand:
 
 	def update(self):
 		"""
-		If autoupdate is off, call this to flush the buffer to the strand
+		Flush the buffer to the strand
 		"""
 		for x in range(self.leds):
 			self.spi.write(self.buffer[x])
