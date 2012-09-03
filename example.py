@@ -3,7 +3,7 @@
 from time import sleep
 from LPD8806 import LPD8806
 
-led = LPD8806(160)
+led = LPD8806()
 
 while True:
 	led.fill(255, 0, 0)
