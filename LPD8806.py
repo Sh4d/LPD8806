@@ -21,21 +21,22 @@ Example:
 	>> led.fill(255, 0, 0)
 """
 
+from pprint import *
+
 class strand:
 
-	def __init__(self, leds=160, autoupdate=1, dev="/dev/spidev0.0"):
+	def __init__(self, leds=160, dev="/dev/spidev0.0"):
 		"""
 		Variables:
 			leds -- strand size
-			autoupdate -- automatically flush the buffer after every change
 			dev -- spi device
 		"""
 		self.dev = dev
-		self.auto = autoupdate
 		self.spi = file(self.dev, "wb")
 		self.leds = leds
 		self.gamma = bytearray(256)
 		self.buffer = [0 for x in range(self.leds)]
+		self.wheelOffset = 0
 		for led in range(self.leds):
 			self.buffer[led] = bytearray(3)
 		for i in range(256):
@@ -53,16 +54,15 @@ class strand:
 			self.buffer[led][0] = self.gamma[g]
 			self.buffer[led][1] = self.gamma[r]
 			self.buffer[led][2] = self.gamma[b]
-		if self.auto: self.update();
 
 	def set(self, pixel, r, g, b):
 		"""
 		Set a single LED a specific color
 		"""
 		self.buffer[pixel][0] = self.gamma[g]
-		self.buffer[pixel][0] = self.gamma[r]
-		self.buffer[pixel][0] = self.gamma[b]
-		if self.auto: self.update();
+		self.buffer[pixel][1] = self.gamma[r]
+		self.buffer[pixel][2] = self.gamma[b]
+
 
 	def update(self):
 		"""
@@ -74,4 +74,27 @@ class strand:
 		self.spi.write(bytearray(b'\x00'))
 		self.spi.flush()
 
-
+	def wheel(self, start=0, end=0):
+		"""
+		Generate a moving color wheel between a start and end
+		"""
+		if end == 0: end = self.leds
+		size = end - start
+		self.wheelOffset += 1
+		if self.wheelOffset == 384: self.wheelOffset = 0;
+		for i in range(size):
+			color = (i * (384 / size) + self.wheelOffset) % 384;
+			if color < 128:
+				r = 127 - color % 128
+				g = color % 128
+				b = 0
+			elif color < 256:
+				g = 127 - color % 128
+				b = color % 128
+				r = 0
+			else:
+				b = 127 - color % 128
+				r = color % 128
+				g = 0
+			self.set(start + i, r, g, b)
+		self.update()

@@ -1,14 +1,22 @@
 #!/usr/bin/python
 
 from time import sleep
-from LPD8806 import LPD8806
+import LPD8806
 
-led = LPD8806()
+led = LPD8806.strand()
 
 while True:
-	led.fill(255, 0, 0)
-	sleep(1)
-	led.fill(0, 255, 0)
-	sleep(1)
-	led.fill(0, 0, 255)
-	sleep(1)
+	for i in range(5):
+		led.fill(255, 0, 0)
+		led.update()
+		sleep(0.3)
+		led.fill(0, 255, 0)
+		led.update()
+		sleep(0.3)
+		led.fill(0, 0, 255)
+		led.update()
+		sleep(0.3)
+
+	for i in range(300):
+		led.wheel()
+		led.update()
